@@ -1,10 +1,9 @@
-﻿
-
+﻿using Shop.Modules.Domain.Entities;
 using Shop.Modules.Domain.Interfaces;
 using System.Linq.Expressions;
 
 
-namespace Shop.Customers.Persistence.Repositories
+namespace Shop.CUser.Persistence.Repositories
 {
     public class CustomersRepository : ICustomersRepository
     {
@@ -18,7 +17,7 @@ namespace Shop.Customers.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public List<Modules.Domain.Entities.Customers> GetCustomerssByCustomersId(int custid)
+        public List<Modules.Domain.Entities.Customers> GetCustomersByCustomersId(int custid)
         {
             throw new NotImplementedException();
         }

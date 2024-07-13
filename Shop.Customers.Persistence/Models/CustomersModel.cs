@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shop.Customers.Persistence.Model
+namespace Shop.CUser.Persistence.Model
 {
     public class CustomersModel
     {

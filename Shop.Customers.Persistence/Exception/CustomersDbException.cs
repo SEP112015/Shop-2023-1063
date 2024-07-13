@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shop.Customers.Persistence.Exception
+namespace Shop.CUser.Persistence.Exception
 {
     public class CustomersDbException : IOException
     {

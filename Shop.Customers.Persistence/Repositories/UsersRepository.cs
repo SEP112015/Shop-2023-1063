@@ -1,5 +1,4 @@
-﻿
-
+﻿using Shop.Common.Data.Respository;
 using Shop.Modules.Domain.Entities;
 using Shop.Modules.Domain.Interfaces;
 using System.Linq.Expressions;
@@ -8,37 +7,37 @@ namespace Shop.Customers.Persistence.Repositories
 {
     public class UsersRepository : IUsersRepository
     {
-        public bool Exists(Expression<Func<Users, bool>> filter)
+        public bool Exists(Expression<Func<Modules.Domain.Entities.Users, bool>> filter)
         {
             throw new NotImplementedException();
         }
 
-        public List<Users> GetAll()
+        public List<Modules.Domain.Entities.Users> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Users GetEntityBy(int id)
+        public Modules.Domain.Entities.Users GetEntityBy(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<Users> GetUsersByUsersId(int UserId)
+        public List<Modules.Domain.Entities.Users> GetUsersByUsersId(int UserId)
         {
             throw new NotImplementedException();
         }
 
-        public void Remove(Users entity)
+        public void Remove(Modules.Domain.Entities.Users entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Save(Users entity)
+        public void Save(Modules.Domain.Entities.Users entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(Users entity)
+        public void Update(Modules.Domain.Entities.Users entity)
         {
             throw new NotImplementedException();
         }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shop.Modules.Domain.Entities;
 
-namespace Shop.Customers.Persistence.Context
+namespace Shop.CUser.Persistence.Context
 {
     public class ShopContext : DbContext
     {
@@ -12,7 +12,7 @@ namespace Shop.Customers.Persistence.Context
         }
         #endregion
         #region "Db Sets"
-        public DbSet<Users> Users { get; set; }
+        public DbSet<Modules.Domain.Entities.Users> Users { get; set; }
         public DbSet<Modules.Domain.Entities.Customers> Customers { get; set; }
         #endregion
 
@@ -21,7 +21,7 @@ namespace Shop.Customers.Persistence.Context
         {
             modelBuilder.Entity<Modules.Domain.Entities.Customers>()
                 .ToTable("Customers", "Sales");
-            modelBuilder.Entity<Users>()
+            modelBuilder.Entity<Modules.Domain.Entities.Users>()
                 .ToTable("Users", "Security");
 
         }

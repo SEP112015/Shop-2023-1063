@@ -10,6 +10,7 @@ namespace Shop.Modules.Domain.Interfaces
 {
     public interface ICustomersRepository : IBaseRepository<Customers, int>
     {
-        List<Users> GetCustomersByCustomersId(int custid);
+        List<Customers> GetCustomersByCustomersId(int custid);
+      
     }
 }

@@ -1,10 +1,10 @@
-﻿using Shop.Customers.Persistence.Context;
-using Shop.Customers.Persistence.Exception;
-using Shop.Customers.Persistence.Model;
-using Shop.Customers.Persistence.Models;
+﻿using Shop.CUser.Persistence.Context;
+using Shop.CUser.Persistence.Exception;
+using Shop.CUser.Persistence.Model;
+using Shop.CUser.Persistence.Models;
 
 
-namespace Shop.Customers.Persistence.Extentions
+namespace Shop.CUser.Persistence.Extentions
 {
     public static class CustomersExtentions
     {

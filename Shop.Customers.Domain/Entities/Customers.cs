@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shop.Modules.Domain.Entities
 {
+    [Table("Customers", Schema = "Sales")]
     public class Customers : AuditEntity<int>
     {
         [Column("custid")]

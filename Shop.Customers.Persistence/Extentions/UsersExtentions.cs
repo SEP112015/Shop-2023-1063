@@ -1,18 +1,13 @@
-﻿using Shop.Customers.Persistence.Context;
-using Shop.Customers.Persistence.Exception;
-using Shop.Customers.Persistence.Models;
-using Shop.Modules.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Shop.CUser.Persistence.Context;
+using Shop.CUser.Persistence.Exception;
+using Shop.CUser.Persistence.Models;
 
-namespace Shop.Customers.Persistence.Extentions
+
+namespace Shop.CUser.Persistence.Extentions
 {
     public static class UsersExtentions
     {
-        public static UsersModel ConvertUsersEntityUsersModel(this Users users)
+        public static UsersModel ConvertUsersEntityUsersModel(this Modules.Domain.Entities.Users users)
         {
             UsersModel usersModel = new UsersModel()
             {
@@ -25,7 +20,7 @@ namespace Shop.Customers.Persistence.Extentions
 
         }
 
-        public static UsersModel ConvertUsersEntityToUsersModel(this Users user)
+        public static UsersModel ConvertUsersEntityToUsersModel(this Modules.Domain.Entities.Users user)
         {
             return new UsersModel
             {
@@ -36,9 +31,9 @@ namespace Shop.Customers.Persistence.Extentions
             };
         }
 
-        public static Users ConvertUsersSaveModelToUsersEntity(this UsersSaveModel usersSave)
+        public static Modules.Domain.Entities.Users ConvertUsersSaveModelToUsersEntity(this UsersSaveModel usersSave)
         {
-            return new Users
+            return new Modules.Domain.Entities.Users
             {
                 UserId = usersSave.UserId,
                 Email = usersSave.Email,
@@ -47,7 +42,7 @@ namespace Shop.Customers.Persistence.Extentions
             };
         }
 
-        public static void UpdateFromModel(this Users user, UsersUpdateModel model)
+        public static void UpdateFromModel(this Modules.Domain.Entities.Users user, UsersUpdateModel model)
         {
             user.UserId = model.UserId;
             user.Email = model.Email;
@@ -55,7 +50,7 @@ namespace Shop.Customers.Persistence.Extentions
             user.Name = model.Name;
         }
 
-        public static Users ValidateUserExists(this ShopContext context, int UserId)
+        public static Modules.Domain.Entities.Users ValidateUserExists(this ShopContext context, int UserId)
         {
             var users = context.Users.Find(UserId);
             if (users == null)
