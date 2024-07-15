@@ -5,14 +5,8 @@ using Shop.Customers.Application.Exceptions;
 using Shop.Customers.Application.Extentions;
 using Shop.Customers.Application.Interfaces;
 using Shop.Infrastructure.Logger.Interfaces;
-using Shop.Modules.Domain.Entities;
 using Shop.Modules.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Shop.Customers.Application.Services
 {
@@ -94,7 +88,7 @@ namespace Shop.Customers.Application.Services
 
         public ServiceResult SaveUsers(UsersSaveDto usersSave)
         {
-            ServiceResult result = ValidatorCustomers<CustomersSaveDto>.Validate(usersSave, 50);
+            ServiceResult result = ValidatorUsers<UsersSaveDto>.Validate(usersSave, 50);
             if (!result.Success)
             {
                 return result;

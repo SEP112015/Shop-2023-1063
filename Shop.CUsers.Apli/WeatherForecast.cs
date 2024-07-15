@@ -1,4 +1,4 @@
-namespace Shop.Users.Api
+namespace Shop.CUsers.Apli
 {
     public class WeatherForecast
     {

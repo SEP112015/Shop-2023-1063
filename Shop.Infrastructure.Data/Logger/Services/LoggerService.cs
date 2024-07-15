@@ -1,13 +1,17 @@
 ﻿using Shop.Infrastructure.Logger.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shop.Infrastructure.Logger.Services
 {
-    internal class LoggerService : ILoggerService
+    public class LoggerService : ILoggerService
     {
+        public void LogError(Exception ex, string message)
+        {
+            this.LogError(ex, message);
+        }
+
+        public void LogInformation(string message)
+        {
+            this.LogInformation(message);
+        }
     }
 }

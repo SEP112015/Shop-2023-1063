@@ -16,7 +16,7 @@ namespace Shop.Customers.Application.Extentions
             if (entity == null)
             {
                 result.Success = false;
-                result.Menssage = $"La entidad de tipo {typeof(T).Name} no puede ser nula";
+                result.Message = $"La entidad de tipo {typeof(T).Name} no puede ser nula";
                 return result;
             }
 
@@ -31,7 +31,7 @@ namespace Shop.Customers.Application.Extentions
                 if (value is string && maxLength > 0 && ((string)value).Length > maxLength)
                 {
                     hasErrors = true;
-                    result.Menssage += $"El valor de la propiedad '{propertyName}' de la entidad " +
+                    result.Message += $"El valor de la propiedad '{propertyName}' de la entidad " +
                         $"{typeof(T).Name} excede la longitud máxima de {maxLength} caracteres.\n";
                 }
             }
