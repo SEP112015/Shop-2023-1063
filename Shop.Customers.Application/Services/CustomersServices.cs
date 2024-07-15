@@ -3,9 +3,8 @@ using Shop.Customers.Application.Dtos.CustomersDtos;
 using Shop.Customers.Application.Interfaces;
 using Shop.Customers.Application.Extentions;
 using Shop.Modules.Domain.Interfaces;
-using Shop.Infrastructure.Logger.Interfaces;
-using Shop.Customers.Application.Exceptions;
 using Shop.Modules.Domain.Entities;
+using Shop.Infrastructure.Logger.Interfaces;
 
 namespace Shop.Customers.Application.Services
 {
@@ -24,45 +23,34 @@ namespace Shop.Customers.Application.Services
 
         public ServiceResult GetCustomers()
         {
-            ServiceResult result = new ServiceResult();
+            var result = new ServiceResult();
             try
             {
-                var customers = _customersRepository.GetAll();
-                if (customers == null || !customers.Any())
-                {
-                    result.Success = false;
-                    result.Message = "No se encontraron clientes.";
-                    return result;
-                }
-                result.Data = customers;
+                result.Data = _customersRepository.GetAll();
+                result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error obteniendo los datos de los clientes.";
+                result.Message = "Ocurrió un error obteniendo los clientes.";
                 _logger.LogError(ex, result.Message);
+
             }
             return result;
         }
 
         public ServiceResult GetCustomersById(int custid)
         {
-            ServiceResult result = new ServiceResult();
+            var result = new ServiceResult();
             try
             {
-                var customer = _customersRepository.GetEntityBy(custid);
-                if (customer == null)
-                {
-                    result.Success = false;
-                    result.Message = $"No se encontró el cliente con ID {custid}.";
-                    return result;
-                }
-                result.Data = customer;
+                result.Data = _customersRepository.GetCustomersByCustomersId(custid);
+                result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error obteniendo los datos del cliente.";
+                result.Message = "Ocurrió un error obteniendo el cliente.";
                 _logger.LogError(ex, result.Message);
             }
             return result;
@@ -70,19 +58,43 @@ namespace Shop.Customers.Application.Services
 
         public ServiceResult RemoveCustomers(CustomersRemoveDto customersRemove)
         {
-            ServiceResult result = new ServiceResult();
+            var result = new ServiceResult();
             try
             {
-                if (customersRemove is null)
-                    throw new CustomersServicesExceptions("No se ha encontrado el cliente");
+                if (customersRemove == null)
+                {
+                    result.Success = false;
+                    result.Message = "Este campo es requerido. ";
+                    return result;
+                }
+
+                var customers = new Modules.Domain.Entities.Customers
+                {
+                    custid = customersRemove.custid,
+                    companyname = customersRemove.companyname,
+                    contactname = customersRemove.contactname,
+                    contacttitle = customersRemove.contacttitle,
+                    address = customersRemove.address,
+                    email = customersRemove.email,
+                    city = customersRemove.city,
+                    region = customersRemove.region,
+                    postalcode = customersRemove.postalcode,
+                    country = customersRemove.country,
+                    phone = customersRemove.phone,
+                    fax = customersRemove.fax
+                };
+
+                _customersRepository.Remove(customers);
+                result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error eliminando los datos del cliente";
+                result.Message = "Ocurrió un error eliminando el cliente.";
                 _logger.LogError(ex, result.Message);
             }
             return result;
+
         }
 
         public ServiceResult SaveCustomers(CustomersSaveDto customersSave)
@@ -95,9 +107,9 @@ namespace Shop.Customers.Application.Services
 
             try
             {
-                var customers = new Modules.Domain.Entities.Customers 
+                var customers = new Modules.Domain.Entities.Customers
                 {
-                   custid = customersSave.custid, 
+                    custid = customersSave.custid,
                     companyname = customersSave.companyname,
                     contactname = customersSave.contactname,
                     contacttitle = customersSave.contacttitle,
@@ -118,8 +130,11 @@ namespace Shop.Customers.Application.Services
             {
                 result.Success = false;
                 result.Message = "Ocurrió un error guardando los datos del cliente";
-                _logger.LogError(ex, result.Message);           }
+                _logger.LogError(ex, result.Message);
+            }
             return result;
+
+
         }
 
         public ServiceResult UpdateCustomers(CustomersUpdateDto customersUpdate)
@@ -158,4 +173,5 @@ namespace Shop.Customers.Application.Services
             return result;
         }
     }
+
 }

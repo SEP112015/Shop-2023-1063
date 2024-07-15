@@ -2,15 +2,17 @@
 using Shop.Customers.Application.Dtos.CustomersDtos;
 using Shop.Customers.Application.Interfaces;
 
-namespace Shop.Customers.Api.Controllers
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace Shop.CUser.Api.Controllers
 {
-    [Route("api/customers")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private readonly ICustomersService _customersService;
 
-        public CustomerController(ICustomersService customersService)
+        public CustomersController(ICustomersService customersService)
         {
             _customersService = customersService;
         }
