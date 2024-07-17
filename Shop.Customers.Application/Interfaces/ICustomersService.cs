@@ -6,14 +6,13 @@ using Shop.Infrastructure.Logger.Interfaces;
 namespace Shop.Customers.Application.Interfaces
 {
     public interface ICustomersService
-    {
-        ILoggerService Logger { get; }
 
+    { 
         ServiceResult SaveCustomers(CustomersSaveDto customersSave);
         ServiceResult UpdateCustomers(CustomersUpdateDto customersUpdate);
         ServiceResult RemoveCustomers(CustomersRemoveDto customersRemove);
         ServiceResult GetCustomers();
-        ServiceResult GetCustomersById(int custid);
+        ServiceResult GetCustomersById(int id);
        
     }
 }

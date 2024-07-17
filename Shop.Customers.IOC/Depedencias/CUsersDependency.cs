@@ -2,7 +2,6 @@
 using Shop.CUser.Persistence.Repositories;
 using Shop.Customers.Application.Interfaces;
 using Shop.Customers.Application.Services;
-using Shop.Customers.Persistence.Repositories;
 using Shop.Infrastructure.Logger.Interfaces;
 using Shop.Infrastructure.Logger.Services;
 using Shop.Modules.Domain.Interfaces;
@@ -21,7 +20,7 @@ namespace Shop.Customers.IOC.Depedencias
             #region Services
             service.AddTransient<ICustomersService, CustomersServices>();
             service.AddTransient<IUsersServices, UsersServices>();
-            service.AddScoped<ILoggerService, LoggerService>();
+
             #endregion
 
 

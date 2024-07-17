@@ -14,7 +14,7 @@ namespace Shop.Customers.Application.Interfaces
         ServiceResult UpdateUsers(UsersUpdateDto usersUpdate);
         ServiceResult RemoveUsers(UsersRemoveDto usersRemove);
         ServiceResult GetUsers();
-        ServiceResult GetUsersById(int UserId);
+        ServiceResult GetUsersById(int id);
 
     }
 }

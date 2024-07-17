@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shop.Customers.Application\Shop.Customers.Application.csproj" />
     <ProjectReference Include="..\Shop.Customers.Domain\Shop.Modules.Domain.csproj" />
+    <ProjectReference Include="..\Shop.Infrastructure.Data\Shop.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

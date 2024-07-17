@@ -1,43 +1,115 @@
 ﻿using Shop.Customers.Application.Core;
+using Shop.Customers.Application.Dtos.CustomersDtos;
+using Shop.Modules.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shop.Customers.Application.Extentions
 {
-    public class ValidatorCustomers<T>
+    public static class ValidatorCustomers
     {
-        public static ServiceResult Validate(T entity, int maxLength = 0)
+        public static CustomersDto ConvertCustEntityCustomersModel(this Modules.Domain.Entities.Customers customers)
         {
-            ServiceResult result = new ServiceResult();
-
-            if (entity == null)
+            if (customers == null)
             {
-                result.Success = false;
-                result.Message = $"La entidad de tipo {typeof(T).Name} no puede ser nula";
-                return result;
+                throw new ArgumentNullException(nameof(customers), "El parámetro 'customers' no puede ser nulo.");
             }
 
-            var properties = typeof(T).GetProperties();
-            var hasErrors = false;
-
-            foreach (var property in properties)
+            return new CustomersDto
             {
-                var value = property.GetValue(entity);
-                var propertyName = property.Name;
+                
+                companyname = customers.companyname,
+                contactname = customers.contactname,
+                contacttitle = customers.contacttitle,
+                address = customers.address,
+                email = customers.email,
+                city = customers.city,
+                region = customers.region,
+                postalcode = customers.postalcode,
+                country = customers.country,
+                phone = customers.phone,
+                fax = customers.fax
+            };
+        }
 
-                if (value is string && maxLength > 0 && ((string)value).Length > maxLength)
-                {
-                    hasErrors = true;
-                    result.Message += $"El valor de la propiedad '{propertyName}' de la entidad " +
-                        $"{typeof(T).Name} excede la longitud máxima de {maxLength} caracteres.\n";
-                }
-            }
+        public static CustomersDto ConvertCustEntityToCustomersDto(this Modules.Domain.Entities.Customers customers)
+        {
 
-            result.Success = !hasErrors;
-            return result;
+
+            return new CustomersDto
+            {
+               
+                companyname = customers.companyname,
+                contactname = customers.contactname,
+                contacttitle = customers.contacttitle,
+                address = customers.address,
+                email = customers.email,
+                city = customers.city,
+                region = customers.region,
+                postalcode = customers.postalcode,
+                country = customers.country,
+                phone = customers.phone,
+                fax = customers.fax
+            };
+        }
+
+        public static void UpdateFromModels(this Modules.Domain.Entities.Customers customers, CustomersUpdateDto model)
+        {
+
+
+            
+            customers.companyname = model.companyname;
+            customers.contactname = model.contactname;
+            customers.contacttitle = model.contacttitle;
+            customers.address = model.address;
+            customers.email = model.email;
+            customers.city = model.city;
+            customers.region = model.region;
+            customers.postalcode = model.postalcode;
+            customers.country = model.country;
+            customers.phone = model.phone;
+            customers.fax = model.fax;
+        }
+
+        public static Modules.Domain.Entities.Customers SaveToCustomersEntity(this CustomersSaveDto customersSave)
+        {
+          
+
+            return new Modules.Domain.Entities.Customers
+            {
+                
+                companyname = customersSave.companyname,
+                contactname = customersSave.contactname,
+                contacttitle = customersSave.contacttitle,
+                address = customersSave.address,
+                email = customersSave.email,
+                city = customersSave.city,
+                region = customersSave.region,
+                postalcode = customersSave.postalcode,
+                country = customersSave.country,
+                phone = customersSave.phone,
+                fax = customersSave.fax
+            };
+        }
+
+        public static Modules.Domain.Entities.Customers ToEntityRemove(this CustomersRemoveDto customerRemove)
+        {
+            
+
+            return new Modules.Domain.Entities.Customers
+            {
+                
+                companyname = customerRemove.companyname,
+                contactname = customerRemove.contactname,
+                contacttitle = customerRemove.contacttitle,
+                address = customerRemove.address,
+                email = customerRemove.email,
+                city = customerRemove.city,
+                region = customerRemove.region,
+                postalcode = customerRemove.postalcode,
+                country = customerRemove.country,
+                phone = customerRemove.phone,
+                fax = customerRemove.fax
+            };
         }
     }
 }

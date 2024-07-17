@@ -2,8 +2,6 @@
 using Shop.Customers.Application.Dtos.CustomersDtos;
 using Shop.Customers.Application.Interfaces;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Shop.CUser.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -21,15 +19,13 @@ namespace Shop.CUser.Api.Controllers
         /// Obtiene la lista de clientes.
         /// </summary>
         /// <returns>La lista de clientes.</returns>
-        [HttpGet]
-        public IActionResult GetCustomers()
+        [HttpGet("GetCustomers")]
+        public IActionResult Get()
         {
             var result = _customersService.GetCustomers();
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
 
             return Ok(result);
         }
@@ -39,16 +35,15 @@ namespace Shop.CUser.Api.Controllers
         /// </summary>
         /// <param name="id">El ID del cliente.</param>
         /// <returns>Los detalles del cliente.</returns>
-        [HttpGet("{custid}")]
-        public IActionResult GetCustomerById(int custid)
+        [HttpGet("GetCustomersById")]
+        public IActionResult Get(int id)
         {
-            var result = _customersService.GetCustomersById(custid);
+         
+            var result = _customersService.GetCustomersById(id);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
-
+            else
             return Ok(result);
         }
 
@@ -57,15 +52,18 @@ namespace Shop.CUser.Api.Controllers
         /// </summary>
         /// <param name="customersSave">Los datos del nuevo cliente.</param>
         /// <returns>El resultado de la operación.</returns>
-        [HttpPost]
+        [HttpPost("SaveCustomer")]
         public IActionResult SaveCustomer([FromBody] CustomersSaveDto customersSave)
         {
+            if (customersSave == null)
+            {
+                return BadRequest(new { success = false, message = "Datos del cliente son requeridos" });
+            }
+
             var result = _customersService.SaveCustomers(customersSave);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
 
             return Ok(result);
         }
@@ -75,15 +73,18 @@ namespace Shop.CUser.Api.Controllers
         /// </summary>
         /// <param name="customersUpdate">Los datos actualizados del cliente.</param>
         /// <returns>El resultado de la operación.</returns>
-        [HttpPut]
-        public IActionResult UpdateCustomer(CustomersUpdateDto customersUpdate)
+        [HttpPut("UpdateCustomers")]
+        public IActionResult UpdateCustomer([FromBody] CustomersUpdateDto customersUpdate)
         {
+            if (customersUpdate == null)
+            {
+                return BadRequest(new { success = false, message = "Datos del cliente son requeridos" });
+            }
+
             var result = _customersService.UpdateCustomers(customersUpdate);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
 
             return Ok(result);
         }
@@ -93,15 +94,18 @@ namespace Shop.CUser.Api.Controllers
         /// </summary>
         /// <param name="customersRemove">Los datos del cliente a eliminar.</param>
         /// <returns>El resultado de la operación.</returns>
-        [HttpDelete]
-        public IActionResult RemoveCustomer(CustomersRemoveDto customersRemove)
+        [HttpDelete("RemoveCustomers")]
+        public IActionResult RemoveCustomer([FromBody] CustomersRemoveDto customersRemove)
         {
+            if (customersRemove == null)
+            {
+                return BadRequest(new { success = false, message = "Datos del cliente son requeridos" });
+            }
+
             var result = _customersService.RemoveCustomers(customersRemove);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
 
             return Ok(result);
         }

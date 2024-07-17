@@ -1,5 +1,7 @@
 ﻿using Shop.CUser.Persistence.Context;
 using Shop.CUser.Persistence.Exception;
+using Shop.CUser.Persistence.Extentions;
+using Shop.Customers.Application.Exceptions;
 using Shop.Modules.Domain.Entities;
 using Shop.Modules.Domain.Interfaces;
 using System.Linq.Expressions;
@@ -21,90 +23,100 @@ namespace Shop.CUser.Persistence.Repositories
 
         public List<Modules.Domain.Entities.Customers> GetAll()
         {
-            return _shopContext.Customers
-                         .OrderByDescending(c => c.Id)
-                         .ToList();
+            return _shopContext.Customers.ToList();
         }
 
         public List<Modules.Domain.Entities.Customers> GetCustomersByCustomersId(int custid)
         {
-            var customers = _shopContext.Customers.Find(custid);
-            if (customers == null)
+            var customers = _shopContext.ValidateCustomerExists(custid);
+
+            if (customers is null)
             {
-                throw new CustomersDbException($"ID no encontrado, {custid}");
+                throw new CustomersDbException($"No se pudo encontrar el cliente con el id {custid}");
             }
             var customersList = new List<Modules.Domain.Entities.Customers> { customers };
 
             return customersList;
         }
 
-        public Modules.Domain.Entities.Customers GetEntityBy(int Id)
+        public Modules.Domain.Entities.Customers GetEntityById(int id)
         {
-            var customers = _shopContext.Customers.Find(Id);
+            var customers = _shopContext.ValidateCustomerExists(id);
             if (customers == null)
             {
-                throw new CustomersDbException($"ID no encontrado, {Id}");
+                throw new CustomersDbException($"ID no encontrado, {id}");
             }
 
             return customers;
+            
 
         }
+
 
         public void Remove(Modules.Domain.Entities.Customers entity)
         {
-            var customers = _shopContext.Customers.Find(entity.Id);
-            customers = ValidarExistencia(entity.Id);
-            _shopContext.Customers.Remove(customers);
-            _shopContext.SaveChanges();
+            var exitstingCustomers = _shopContext.ValidateCustomerExists(entity.Id);
+            if (exitstingCustomers != null)
+            {
+                _shopContext.Customers.Remove(exitstingCustomers);
+                _shopContext.SaveChanges();
+            }
+            else
+            {
+                throw new ArgumentException("El cliente no existe.");
+            }
         }
+
+     
 
         public void Save(Modules.Domain.Entities.Customers entity)
         {
-            if (entity == null)
+            try
             {
-                throw new CustomersDbException(nameof(entity));
-            }
+                if (entity == null)
+                {
+                    throw new ArgumentNullException(nameof(entity), "La entidad no puede ser nula.");
+                }
 
-            _shopContext.Customers.Add(entity);
-            _shopContext.SaveChanges();
+                _shopContext.Customers.Add(entity);
+                _shopContext.SaveChanges();
+            }
+            catch
+            {
+                throw new CustomersServicesExceptions("Error al guardar el cliente.");
+            }
         }
+
+      
 
         public void Update(Modules.Domain.Entities.Customers entity)
         {
-            if (entity == null)
+
+
+            try
             {
-                throw new CustomersDbException(nameof(entity));
+                Modules.Domain.Entities.Customers customersUpdate = GetEntityById(entity.Id);
+
+                if (entity == null)
+                {
+                    _shopContext.Customers.Update(entity);
+                    _shopContext.SaveChanges();
+                }
+                else
+                {
+                    throw new ArgumentException(nameof(entity), "La entidad no puede ser nula");
+
+                }
+              
             }
-
-            var customers = _shopContext.Customers.Find(entity.Id);
-
-            if (customers == null)
+            catch (System.Exception)
             {
-                throw new CustomersDbException($"ID no encontrado, {entity.Id}");
+
+                throw new CustomersDbException("Error al actualizar el cliente");
             }
-
-            customers.custid = entity.custid;
-            customers.companyname = entity.companyname;
-            customers.contactname = entity.contactname;
-            customers.contacttitle = entity.contacttitle;
-            customers.address = entity.address;
-            customers.email = entity.email;
-            customers.city = entity.city;
-            customers.region = entity.region;
-            customers.postalcode = entity.postalcode;
-            customers.country = entity.country;
-            customers.phone = entity.phone;
-            customers.fax = entity.fax;
-
-            _shopContext.Customers.Update(customers);
-            _shopContext.SaveChanges();
+            
         }
 
-        private Modules.Domain.Entities.Customers ValidarExistencia(int custid)
-        {
-            var customers = _shopContext.Customers.Find(custid);
-            return customers;
-        }
 
     }
 }

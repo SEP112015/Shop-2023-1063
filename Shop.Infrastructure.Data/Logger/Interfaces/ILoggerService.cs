@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shop.Infrastructure.Logger.Interfaces
+﻿namespace Shop.Infrastructure.Logger.Interfaces
 {
-    public interface ILoggerService
+    public interface ILoggerService<T>
     {
+        void LogError(string message, string exception);
         void LogInformation(string message);
-        void LogError(Exception ex, string message);
     }
 }

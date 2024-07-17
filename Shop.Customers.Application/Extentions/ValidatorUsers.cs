@@ -1,4 +1,6 @@
 ﻿using Shop.Customers.Application.Core;
+using Shop.Customers.Application.Dtos.CustomersDtos;
+using Shop.Customers.Application.Dtos.UsersDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,38 +9,64 @@ using System.Threading.Tasks;
 
 namespace Shop.Customers.Application.Extentions
 {
-    public  class ValidatorUsers<T>
+    public static class ValidatorUsers
     {
-        public static ServiceResult Validate(T entity, int maxLength = 0)
+        public static UsersDto ConvertUsersEntityUsersModel(this Modules.Domain.Entities.Users users)
         {
-            ServiceResult result = new ServiceResult();
-
-            if (entity == null)
+            UsersDto usersModel = new UsersDto()
             {
-                result.Success = false;
-                result.Message = $"La entidad de tipo {typeof(T).Name} no puede ser nula";
-                return result;
-            }
+                
+                Email = users.Email,
+                Password = users.Password,
+                Name = users.Name
+            };
+            return usersModel;
 
-            var properties = typeof(T).GetProperties();
-            var hasErrors = false;
-
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(entity);
-                var propertyName = property.Name;
-
-                if (value is string && maxLength > 0 && ((string)value).Length > maxLength)
-                {
-                    hasErrors = true;
-                    result.Message += $"El valor de la propiedad '{propertyName}' de la entidad " +
-                        $"{typeof(T).Name} excede la longitud máxima de {maxLength} caracteres.\n";
-                }
-            }
-
-            result.Success = !hasErrors;
-            return result;
         }
+
+        public static UsersDto ConvertUsersEntityToUsersModel(this Modules.Domain.Entities.Users user)
+        {
+            return new UsersDto
+            {
+               
+                Email = user.Email,
+                Password = user.Password,
+                Name = user.Name
+            };
+        }
+
+        public static Modules.Domain.Entities.Users SaveToUsersEntity(this UsersSaveDto usersSave)
+        {
+            return new Modules.Domain.Entities.Users
+            {
+                
+                Email = usersSave.Email,
+                Password = usersSave.Password,
+                Name = usersSave.Name
+            };
+        }
+
+        public static void UpdateFromModel(this Modules.Domain.Entities.Users user, UsersUpdateDto model)
+        {
+           
+            user.Email = model.Email;
+            user.Password = model.Password;
+            user.Name = model.Name;
+        }
+
+
+
+        public static Modules.Domain.Entities.Users ToEntityRemove(this UsersRemoveDto usersRemove)
+        {
+            return new Modules.Domain.Entities.Users
+            {
+               
+                Email = usersRemove.Email,
+                Password = usersRemove.Password,
+                Name = usersRemove.Name
+            };
+        }
+
 
     }
 }

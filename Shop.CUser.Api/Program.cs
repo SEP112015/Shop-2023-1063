@@ -1,21 +1,23 @@
-using Shop.CUser.Persistence.Repositories;
-using Shop.Customers.Application.Interfaces;
-using Shop.Customers.Application.Services;
+
 using Shop.Infrastructure.Logger.Interfaces;
 using Shop.Infrastructure.Logger.Services;
-using Shop.Modules.Domain.Interfaces;
+
 using Shop.Customers.IOC.Depedencias;
 using Microsoft.EntityFrameworkCore;
 using Shop.CUser.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddDbContext<ShopContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ShopContext")));
 
-// Add services to the container.
+builder.Services.AddCUsersDependency();
 
+builder.Services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
+
+
+
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -32,7 +34,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddCUsersDependency();
+
 
 var app = builder.Build();
 

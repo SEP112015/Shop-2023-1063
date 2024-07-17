@@ -6,6 +6,7 @@ using Shop.Customers.Application.Extentions;
 using Shop.Customers.Application.Interfaces;
 using Shop.Infrastructure.Logger.Interfaces;
 using Shop.Modules.Domain.Interfaces;
+using static Shop.Customers.Application.Extentions.ValidatorCUser;
 
 
 namespace Shop.Customers.Application.Services
@@ -14,9 +15,9 @@ namespace Shop.Customers.Application.Services
     {
 
         private readonly IUsersRepository _usersRepository;
-        private readonly ILoggerService _logger;
+        private readonly ILoggerService<UsersServices> _logger;
 
-        public UsersServices(IUsersRepository usersRepository, ILoggerService logger)
+        public UsersServices(IUsersRepository usersRepository, ILoggerService<UsersServices> logger)
         {
             _usersRepository = usersRepository;
             _logger = logger;
@@ -25,124 +26,140 @@ namespace Shop.Customers.Application.Services
 
         public ServiceResult GetUsers()
         {
-            ServiceResult result = new ServiceResult();
+            var result = new ServiceResult();
             try
-            {
-                var users = _usersRepository.GetAll();
-                if (users == null || !users.Any())
-                {
-                    result.Success = false;
-                    result.Message = "No se encontraron usuarios.";
-                    return result;
-                }
-                result.Data = users;
+            {               
+                    result.Data = _usersRepository.GetAll();
+                    result.Success = true;
             }
+
             catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = "Ocurrió un error obteniendo los datos de los usuarios.";
-                _logger.LogError(ex, result.Message);
+                _logger.LogError(result.Message, ex.ToString());
             }
             return result;
         }
 
-        public ServiceResult GetUsersById(int UserId)
+        public ServiceResult GetUsersById(int id)
         {
-            ServiceResult result = new ServiceResult();
+            var result = new ServiceResult();
+
             try
             {
-                var user = _usersRepository.GetEntityBy(UserId);
-                if (user == null)
+                if (id <= 0)
                 {
                     result.Success = false;
-                    result.Message = $"No se encontró el usuario con ID {UserId}.";
+                    result.Message = "ID del usuario inválido";
                     return result;
                 }
-                result.Data = user;
+
+                var customer = _usersRepository.GetEntityById(id);
+
+                if (customer == null)
+                {
+                    result.Success = false;
+                    result.Message = "Usuario no encontrado";
+                    return result;
+                }
+
+                result.Data = customer;
+                result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error obteniendo los datos del usuario.";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Error obteniendo el usuario";
+                _logger.LogError(result.Message, ex.ToString());
             }
             return result;
         }
 
         public ServiceResult RemoveUsers(UsersRemoveDto usersRemove)
         {
-            ServiceResult result = new ServiceResult();
+            var result = new ServiceResult();
             try
             {
-                if (usersRemove is null)
-                    throw new UsersServicesExceptions("No se ha encontrado el usuario");
+                if (usersRemove == null)
+                {
+                    result.Success = false;
+                    result.Message = "Este campo es requerido. ";
+                    return result;
+                }
+
+                var users = usersRemove.ToEntityRemove();
+
+                _usersRepository.Remove(users);
+                result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error eliminando los datos del usuario";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Ocurrió un error eliminando los datos.";
+                _logger.LogError(result.Message, ex.ToString());
             }
             return result;
         }
 
         public ServiceResult SaveUsers(UsersSaveDto usersSave)
         {
-            ServiceResult result = ValidatorUsers<UsersSaveDto>.Validate(usersSave, 50);
-            if (!result.Success)
-            {
-                return result;
-            }
+            var result = new ServiceResult();
 
             try
             {
-                var users = new Modules.Domain.Entities.Users
+                result = EntityValidator<UsersSaveDto>.Validate(usersSave);
+                if (!result.Success)
                 {
-                    UserId = usersSave.UserId,
-                    Email = usersSave.Email,
-                    Password = usersSave.Password,
-                    Name = usersSave.Name
+                    return result;
+                }
 
-
-                };
+                var users = usersSave.SaveToUsersEntity();
                 _usersRepository.Save(users);
                 result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error guardando los datos del cliente";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Ocurrió un error guardando los datos";
+                _logger.LogError(result.Message, ex.ToString());
             }
-            return result;
 
+            return result;
         }
 
         public ServiceResult UpdateUsers(UsersUpdateDto usersUpdate)
         {
-            ServiceResult result = ValidatorUsers<UsersUpdateDto>.Validate(usersUpdate, 50);
-            if (!result.Success)
-            {
-                return result;
-            }
+            var result = new ServiceResult();
 
             try
             {
-                var existingUsers = _usersRepository.GetEntityBy(usersUpdate.UserId);
+                result = EntityValidator<UsersUpdateDto>.Validate(usersUpdate);
+                if (!result.Success)
+                {
+                    return result;
+                }
 
-                existingUsers.UserId = usersUpdate.UserId;
-                existingUsers.Email = usersUpdate.Email;
-                existingUsers.Password = usersUpdate.Password;
-                existingUsers.Name = usersUpdate.Name;
-                _usersRepository.Update(existingUsers);
+                var users = _usersRepository.GetEntityById(usersUpdate.UserId);
+
+                if (users == null)
+                {
+                    result.Success = false;
+                    result.Message = "Usuario no encontrado";
+                    return result;
+                }
+
+                users.UpdateFromModel(usersUpdate);
+                _usersRepository.Update(users);
                 result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error actualizando los datos del cliente";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Ocurrió un error actualizando los datos.";
+                _logger.LogError(result.Message, ex.ToString());
             }
+
             return result;
         }
     }

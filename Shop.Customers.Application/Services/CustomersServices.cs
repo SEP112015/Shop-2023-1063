@@ -5,25 +5,25 @@ using Shop.Customers.Application.Extentions;
 using Shop.Modules.Domain.Interfaces;
 using Shop.Modules.Domain.Entities;
 using Shop.Infrastructure.Logger.Interfaces;
+using static Shop.Customers.Application.Extentions.ValidatorCUser;
 
 namespace Shop.Customers.Application.Services
 {
     public class CustomersServices : ICustomersService
     {
         private readonly ICustomersRepository _customersRepository;
-        private readonly ILoggerService _logger;
+        private readonly ILoggerService<CustomersServices> _logger;
 
-        public CustomersServices(ICustomersRepository customersRepository, ILoggerService logger)
+        public CustomersServices(ICustomersRepository customersRepository, ILoggerService<CustomersServices> logger)
         {
             _customersRepository = customersRepository;
             _logger = logger;
         }
 
-        public ILoggerService Logger { get; }
-
         public ServiceResult GetCustomers()
         {
             var result = new ServiceResult();
+
             try
             {
                 result.Data = _customersRepository.GetAll();
@@ -32,26 +32,42 @@ namespace Shop.Customers.Application.Services
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error obteniendo los clientes.";
-                _logger.LogError(ex, result.Message);
-
+                result.Message = "Error obteniendo los datos de los clientes";
+                _logger.LogError(result.Message, ex.ToString());
             }
             return result;
         }
 
-        public ServiceResult GetCustomersById(int custid)
+        public ServiceResult GetCustomersById(int id)
         {
             var result = new ServiceResult();
+
             try
             {
-                result.Data = _customersRepository.GetCustomersByCustomersId(custid);
+                if (id <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "ID del cliente inválido";
+                    return result;
+                }
+
+                var customer = _customersRepository.GetEntityById(id);
+
+                if (customer == null)
+                {
+                    result.Success = false;
+                    result.Message = "Cliente no encontrado";
+                    return result;
+                }
+
+                result.Data = customer;
                 result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error obteniendo el cliente.";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Error obteniendo el cliente";
+                _logger.LogError(result.Message, ex.ToString());
             }
             return result;
         }
@@ -59,30 +75,17 @@ namespace Shop.Customers.Application.Services
         public ServiceResult RemoveCustomers(CustomersRemoveDto customersRemove)
         {
             var result = new ServiceResult();
+
             try
             {
                 if (customersRemove == null)
                 {
                     result.Success = false;
-                    result.Message = "Este campo es requerido. ";
+                    result.Message = "Datos del cliente son requeridos";
                     return result;
                 }
 
-                var customers = new Modules.Domain.Entities.Customers
-                {
-                    custid = customersRemove.custid,
-                    companyname = customersRemove.companyname,
-                    contactname = customersRemove.contactname,
-                    contacttitle = customersRemove.contacttitle,
-                    address = customersRemove.address,
-                    email = customersRemove.email,
-                    city = customersRemove.city,
-                    region = customersRemove.region,
-                    postalcode = customersRemove.postalcode,
-                    country = customersRemove.country,
-                    phone = customersRemove.phone,
-                    fax = customersRemove.fax
-                };
+                var customers = customersRemove.ToEntityRemove();
 
                 _customersRepository.Remove(customers);
                 result.Success = true;
@@ -90,88 +93,71 @@ namespace Shop.Customers.Application.Services
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error eliminando el cliente.";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Ocurrió un error eliminando los datos.";
+                _logger.LogError(result.Message, ex.ToString());
             }
             return result;
-
         }
 
         public ServiceResult SaveCustomers(CustomersSaveDto customersSave)
         {
-            ServiceResult result = ValidatorCustomers<CustomersSaveDto>.Validate(customersSave, 50);
-            if (!result.Success)
-            {
-                return result;
-            }
+            var result = new ServiceResult();
 
             try
             {
-                var customers = new Modules.Domain.Entities.Customers
+                result = EntityValidator<CustomersSaveDto>.Validate(customersSave);
+                if (!result.Success)
                 {
-                    custid = customersSave.custid,
-                    companyname = customersSave.companyname,
-                    contactname = customersSave.contactname,
-                    contacttitle = customersSave.contacttitle,
-                    address = customersSave.address,
-                    email = customersSave.email,
-                    city = customersSave.city,
-                    region = customersSave.region,
-                    postalcode = customersSave.postalcode,
-                    country = customersSave.country,
-                    phone = customersSave.phone,
-                    fax = customersSave.fax
+                    return result;
+                }
 
-                };
+                var customers = customersSave.SaveToCustomersEntity();
                 _customersRepository.Save(customers);
                 result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error guardando los datos del cliente";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Ocurrió un error guardando los datos";
+                _logger.LogError(result.Message, ex.ToString());
             }
+
             return result;
-
-
         }
 
         public ServiceResult UpdateCustomers(CustomersUpdateDto customersUpdate)
         {
-            ServiceResult result = ValidatorCustomers<CustomersUpdateDto>.Validate(customersUpdate, 50);
-            if (!result.Success)
-            {
-                return result;
-            }
+            var result = new ServiceResult();
 
             try
             {
-                var existingCustomers = _customersRepository.GetEntityBy(customersUpdate.custid);
+                result = EntityValidator<CustomersUpdateDto>.Validate(customersUpdate);
+                if (!result.Success)
+                {
+                    return result;
+                }
 
-                existingCustomers.custid = customersUpdate.custid;
-                existingCustomers.companyname = customersUpdate.companyname;
-                existingCustomers.contactname = customersUpdate.contactname;
-                existingCustomers.contacttitle = customersUpdate.contacttitle;
-                existingCustomers.address = customersUpdate.address;
-                existingCustomers.email = customersUpdate.email;
-                existingCustomers.city = customersUpdate.city;
-                existingCustomers.region = customersUpdate.region;
-                existingCustomers.postalcode = customersUpdate.postalcode;
-                existingCustomers.country = customersUpdate.country;
-                existingCustomers.phone = customersUpdate.phone;
-                existingCustomers.fax = customersUpdate.fax;
-                _customersRepository.Update(existingCustomers);
+                var customer = _customersRepository.GetEntityById(customersUpdate.custid);
+
+                if (customer == null)
+                {
+                    result.Success = false;
+                    result.Message = "Cliente no encontrado";
+                    return result;
+                }
+
+                customer.UpdateFromModels(customersUpdate);
+                _customersRepository.Update(customer);
                 result.Success = true;
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Ocurrió un error actualizando los datos del cliente";
-                _logger.LogError(ex, result.Message);
+                result.Message = "Ocurrió un error actualizando los datos.";
+                _logger.LogError(result.Message, ex.ToString());
             }
+
             return result;
         }
     }
-
 }

@@ -5,8 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Shop.Customers.Application.Exceptions
-{
-    public class CustomersServicesExceptions(string message) : Exception(message)
+{ 
+    public class CustomersServicesExceptions : Exception
     {
+        public CustomersServicesExceptions(string message) : base(message)
+        {
+
+        }
     }
 }

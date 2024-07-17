@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Shop.Modules.Domain.Entities
 {
     [Table("Customers", Schema = "Sales")]
-    public class Customers : AuditEntity<int>
+    public class Customers : BaseEntity<int>
     {
         [Key]
         [Column("custid")]

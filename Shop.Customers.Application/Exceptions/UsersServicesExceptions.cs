@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace Shop.Customers.Application.Exceptions
 {
-    public class UsersServicesExceptions(string message) : Exception(message)
+    public class UsersServicesExceptions : Exception
     {
-        
+        public UsersServicesExceptions(string message): base(message)
+        {
+                
+        }
 
     }
 }

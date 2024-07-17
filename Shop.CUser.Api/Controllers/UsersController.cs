@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shop.Customers.Application.Dtos.UsersDtos;
 using Shop.Customers.Application.Interfaces;
+using Shop.Customers.Application.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,13 +26,9 @@ namespace Shop.CUser.Api.Controllers
             var result = _usersServices.GetUsers();
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
-            else
-            {
-                return Ok(result);
-            }
+
+            return Ok(result);
 
         }
 
@@ -41,13 +38,9 @@ namespace Shop.CUser.Api.Controllers
             var result = _usersServices.GetUsersById(id);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
             else
-            {
                 return Ok(result);
-            }
 
         }
 
@@ -56,46 +49,49 @@ namespace Shop.CUser.Api.Controllers
         [HttpPost("SaveUser")]
         public IActionResult Post([FromBody] UsersSaveDto usersSave)
         {
+            if (usersSave == null)
+            {
+                return BadRequest(new { success = false, message = "Datos del usuario son requeridos" });
+            }
+
             var result = _usersServices.SaveUsers(usersSave);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
-            else
-            {
-                return Ok(result);
-            }
+
+            return Ok(result);
         }
 
-        [HttpPost("UpdateUser")]
+        [HttpPut("UpdateUser")]
         public IActionResult Put(UsersUpdateDto usersUpdate)
         {
+            if (usersUpdate == null)
+            {
+                return BadRequest(new { success = false, message = "Datos del usuario son requeridos" });
+            }
+
             var result = _usersServices.UpdateUsers(usersUpdate);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
-            else
-            {
-                return Ok(result);
-            }
+
+            return Ok(result);
         }
 
-        [HttpPost("RemoveUser")]
+        [HttpDelete("RemoveUser")]
         public IActionResult Delete(UsersRemoveDto usersRemove)
         {
+            if (usersRemove == null)
+            {
+                return BadRequest(new { success = false, message = "Datos del usuario son requeridos" });
+            }
+
             var result = _usersServices.RemoveUsers(usersRemove);
 
             if (!result.Success)
-            {
                 return BadRequest(result);
-            }
-            else
-            {
-                return Ok(result);
-            }
+
+            return Ok(result);
         }
     }
 }

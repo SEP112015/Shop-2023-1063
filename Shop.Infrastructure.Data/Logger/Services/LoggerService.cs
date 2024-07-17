@@ -1,17 +1,26 @@
-﻿using Shop.Infrastructure.Logger.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Shop.Infrastructure.Logger.Interfaces;
+using System;
 
 namespace Shop.Infrastructure.Logger.Services
 {
-    public class LoggerService : ILoggerService
+    public class LoggerService<T> : ILoggerService<T>
     {
-        public void LogError(Exception ex, string message)
+        private readonly ILogger<T> _logger;
+
+        public LoggerService(ILogger<T> logger)
         {
-            this.LogError(ex, message);
+            _logger = logger;
+        }
+
+        public void LogError(string message, string exception)
+        {
+            _logger.LogError(exception, message);
         }
 
         public void LogInformation(string message)
         {
-            this.LogInformation(message);
+            _logger.LogInformation(message);
         }
     }
 }

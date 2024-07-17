@@ -12,7 +12,7 @@ namespace Shop.CUser.Persistence.Context
         }
         #endregion
         #region "Db Sets"
-        public DbSet<Modules.Domain.Entities.Users> Users { get; set; }
+        public DbSet<Users> Users { get; set; }
         public DbSet<Modules.Domain.Entities.Customers> Customers { get; set; }
         #endregion
 
@@ -21,7 +21,7 @@ namespace Shop.CUser.Persistence.Context
         {
             modelBuilder.Entity<Modules.Domain.Entities.Customers>()
                 .ToTable("Customers", "Sales");
-            modelBuilder.Entity<Modules.Domain.Entities.Users>()
+            modelBuilder.Entity<Users>()
                 .ToTable("Users", "Security");
 
         }

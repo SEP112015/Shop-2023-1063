@@ -1,11 +1,13 @@
 ﻿using Shop.Common.Data.Respository;
 using Shop.CUser.Persistence.Context;
 using Shop.CUser.Persistence.Exception;
+using Shop.CUser.Persistence.Extentions;
+using Shop.Customers.Application.Exceptions;
 using Shop.Modules.Domain.Entities;
 using Shop.Modules.Domain.Interfaces;
 using System.Linq.Expressions;
 
-namespace Shop.Customers.Persistence.Repositories
+namespace Shop.CUser.Persistence.Repositories
 {
     public class UsersRepository : IUsersRepository
     {
@@ -22,81 +24,92 @@ namespace Shop.Customers.Persistence.Repositories
 
         public List<Modules.Domain.Entities.Users> GetAll()
         {
-            return _shopContext.Users
-                        .OrderByDescending(c => c.UserId)
-                        .ToList();
+            return _shopContext.Users.ToList();
         }
 
-        public Modules.Domain.Entities.Users GetEntityBy(int id)
+
+        public Users GetEntityById(int id)
         {
-            var users = _shopContext.Users.Find(id);
+            var users = _shopContext.ValidateUserExists(id);
             if (users == null)
             {
                 throw new UsersDbException($"ID no encontrado, {id}");
             }
 
             return users;
+
         }
 
         public List<Modules.Domain.Entities.Users> GetUsersByUsersId(int UserId)
         {
-            var users = _shopContext.Users.Find(UserId);
-            if (users == null)
-            {
-                throw new UsersDbException($"ID no encontrado, {UserId}");
-            }
-            var UsersList = new List<Users> { users };
+            var users = _shopContext.ValidateUserExists(UserId);
 
-            return UsersList;
+            if (users is null)
+            {
+                throw new CustomersDbException($"No se pudo encontrar el cliente con el id {UserId}");
+            }
+            var userList = new List<Modules.Domain.Entities.Users> { users };
+
+            return userList;
         }
 
         public void Remove(Modules.Domain.Entities.Users entity)
         {
-            var users = _shopContext.Users.Find(entity.custid);
-            users = ValidarExistencia(entity.UserId);
-            _shopContext.Users.Remove(users);
-            _shopContext.SaveChanges();
+            var existingUser = _shopContext.ValidateUserExists(entity.Id);
+            if (existingUser != null)
+            {
+                _shopContext.Users.Remove(existingUser);
+                _shopContext.SaveChanges();
+            }
+            else
+            {
+                throw new ArgumentException("El usuario no existe.");
+            }
         }
 
         public void Save(Modules.Domain.Entities.Users entity)
         {
-            if (entity == null)
+            try
             {
-                throw new UsersDbException(nameof(entity));
-            }
+                if (entity == null)
+                {
+                    throw new ArgumentNullException(nameof(entity), "La entidad no puede ser nula.");
+                }
 
-            _shopContext.Users.Add(entity);
-            _shopContext.SaveChanges();
+                _shopContext.Users.Add(entity);
+                _shopContext.SaveChanges();
+            }
+            catch
+            {
+                throw new CustomersServicesExceptions("Error al guardar el usuario.");
+            }
         }
 
         public void Update(Modules.Domain.Entities.Users entity)
         {
-            if (entity == null)
+            try
             {
-                throw new UsersDbException(nameof(entity));
+                Modules.Domain.Entities.Users userUpdate = GetEntityById(entity.Id);
+
+                if (entity == null)
+                {
+                    _shopContext.Users.Update(entity);
+                    _shopContext.SaveChanges();
+                }
+                else
+                {
+                    throw new ArgumentException(nameof(entity), "La entidad no puede ser nula");
+
+                }
+
             }
-
-            var category = _shopContext.Users.Find(entity.UserId);
-
-            if (category == null)
+            catch (System.Exception)
             {
-                throw new UsersDbException($"ID no encontrado, {entity.UserId}");
+
+                throw new CustomersDbException("Error al actualizar el usuario");
             }
-
-            category.UserId = entity.UserId;
-            category.Email = entity.Email;
-            category.Password = entity.Password;
-            category.Name = entity.Name;
-
-            _shopContext.Users.Update(category);
-            _shopContext.SaveChanges();
         }
 
 
-        private Modules.Domain.Entities.Users ValidarExistencia(int UserId)
-        {
-            var users = _shopContext.Users.Find(UserId);
-            return users;
-        }
     }
 }

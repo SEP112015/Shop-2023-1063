@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shop.Customers.Application.Dtos.CustomersDtos
 {
-    public abstract class CustomersDto 
+    public class CustomersDto 
     {
         [Key]
         public int custid { get; set; }
